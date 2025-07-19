@@ -4,7 +4,6 @@ import com.cgtrac.quiz_service.Dao.QuizDao;
 import com.cgtrac.quiz_service.Model.QuestionWrapper;
 import com.cgtrac.quiz_service.Model.Quiz;
 import com.cgtrac.quiz_service.Model.Response;
-import com.cgtrac.quiz_service.QuizInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class QuizService {
     QuizDao quizDao;
 
     @Autowired
-    QuizInterface quizInterface;
+    QuestionServiceClient questionServiceClient;
 
     public ResponseEntity<String> createQuiz(String category, Integer numOfQuestions, String title) {
         Quiz quiz = new Quiz();
@@ -30,7 +29,7 @@ public class QuizService {
         // Feign Client - declarative way of requesting service - API u want to hit
         // Service Discovery - Quiz service needs to find Question service - Discover
 
-        List<Integer> questionIds = quizInterface.getQuestionsForQuiz(numOfQuestions,category).getBody();
+        List<Integer> questionIds = questionServiceClient.getQuestionsForQuiz(numOfQuestions,category).getBody();
         quiz.setTitle(title);
         quiz.setQuestionIds(questionIds);
         quizDao.save(quiz);
@@ -45,14 +44,14 @@ public class QuizService {
     public ResponseEntity<List<QuestionWrapper>> getQuizQuestionsById(Integer quizId) {
         Optional<Quiz> myQuiz = quizDao.findById(quizId);
         if (myQuiz.isPresent()) {
-            return quizInterface.getQuestionsFromId(myQuiz.get().getQuestionIds());
+            return questionServiceClient.getQuestionsFromId(myQuiz.get().getQuestionIds());
         } else {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }
     public ResponseEntity<String> calculateResult(Integer quizId, List<Response> myQuizResponses) {
         //Interaction with Question Directly
-            int score = quizInterface.getScore(myQuizResponses).getBody();
+            int score = questionServiceClient.getScore(myQuizResponses).getBody();
             return new ResponseEntity<>(String.format("Number of Correct Answers: %d ",score),HttpStatus.OK);
         }
     }
