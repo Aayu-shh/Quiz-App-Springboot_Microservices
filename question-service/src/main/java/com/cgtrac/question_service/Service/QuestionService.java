@@ -73,9 +73,9 @@ public class QuestionService {
                 questionWrapper.setId(question.getId());
                 questionWrapper.setQuestionTitle(question.getQuestionTitle());
                 questionWrapper.setOption1(question.getOption1());
-                questionWrapper.setOption1(question.getOption2());
-                questionWrapper.setOption1(question.getOption3());
-                questionWrapper.setOption1(question.getOption4());
+                questionWrapper.setOption2(question.getOption2());
+                questionWrapper.setOption3(question.getOption3());
+                questionWrapper.setOption4(question.getOption4());
                 wrappers.add(questionWrapper);
             }
             else{
